@@ -1,0 +1,47 @@
+program = _{ SOI ~ navigate_block+ ~ EOI }
+
+navigate_block = { "navigateTo" ~ "(" ~ string ~ ")" ~ "{" ~ statements ~ "}" }
+
+statements = _{
+  (statement ~ ";")*
+}
+
+statement = _{
+  assignment_statement
+  | in_statement
+  | write_statement
+  // | assignment_statement
+}
+
+expression = {
+  from_expression
+}
+
+from_expression = { "from" ~ "(" ~ element ~ "having" ~ selector_tag ~ ")" ~ content }
+
+in_statement = { "in" ~ "parent"? ~ "(" ~ element ~ "having" ~ selector_tag ~ ")" ~ "{" ~ statements ~ "}" }
+
+write_statement = { "write" ~ "(" ~ (ident | string) ~ ("," ~ (ident | string))* ~ ")" }
+
+assignment_statement = { ident ~ "=" ~ expression }
+
+selector_tag = {
+  "class" ~ "(" ~ string  ~ ")"
+  | "id" ~ "(" ~ string ~ ")"
+}
+
+content = {
+  "getTextContent"
+}
+
+element = {
+  // Reminder that order might foreshadow some elements eg) th before thead will never match thead
+  "form" | "input" | "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
+  | "div" | "table" | "thead" | "tbody" | "tr" | "th"
+}
+
+ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_" )* }
+
+string = @{ "'" ~ ( "''" | "\\'" | (!"'" ~ ANY) )* ~ "'" }
+
+WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
