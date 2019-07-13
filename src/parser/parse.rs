@@ -6,7 +6,7 @@ struct CrawlerParser;
 
 use pest::iterators::Pairs;
 
-pub fn parse_file(source: &str) -> Pairs<Rule> {
+pub fn parse(source: &str) -> Pairs<Rule> {
   CrawlerParser::parse(Rule::program, source).expect("unable to parse")
 }
 
