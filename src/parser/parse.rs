@@ -31,14 +31,30 @@ mod tests {
   }
 
   #[test]
+  fn parse_ident_expression() {
+    assert!(CrawlerParser::parse(
+      Rule::expression,
+      "x"
+    ).is_ok());
+  }
+
+  #[test]
+  fn parse_string_expression() {
+    assert!(CrawlerParser::parse(
+      Rule::expression,
+      "'abd'"
+    ).is_ok());
+  }
+
+  #[test]
   fn parse_from_expression() {
     assert!(CrawlerParser::parse(
-      Rule::from_expression,
+      Rule::expression,
       "from    (h1 having id('title')) getTextContent"
     ).is_ok());
 
     assert!(CrawlerParser::parse(
-      Rule::from_expression,
+      Rule::expression,
       "from
       (h1 
       having 
