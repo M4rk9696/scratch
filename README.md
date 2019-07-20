@@ -24,6 +24,13 @@ navigateTo('http://www.example.com') {
 }
 ```
 
+### Contributing
+
+- Fork the repository
+- Make changes and add appropriate tests
+- Run the test with `cargo test`
+- Raise a PR
+
 ### TODO - Roadmap
 - [] Finalize the grammar
 - [] Work up to MVP
