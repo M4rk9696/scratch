@@ -1,7 +1,7 @@
 navigateTo('http://www.example.com') {
   in(table having id('a')) {
     question = from(tr having class('question')) getTextContent;
-    answer = from(tr having class('question')) getTextContent;
-    write(question, answer)
-  }
+    answer = from(tr having class('answer')) getTextContent;
+    write(question, answer);
+  };
 }

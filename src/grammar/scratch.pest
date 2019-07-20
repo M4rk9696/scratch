@@ -44,6 +44,8 @@ element = {
 
 ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_" )* }
 
-string = @{ "'" ~ ( "''" | "\\'" | (!"'" ~ ANY) )* ~ "'" }
+string = _{ "'" ~ inner_str ~ "'" }
+
+inner_str = @{ ( "''" | "\\'" | (!"'" ~ ANY) )* }
 
 WHITESPACE = _{ " " | "\t" | "\n" | "\r" }

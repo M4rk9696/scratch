@@ -1,8 +1,14 @@
+use pest::iterators::Pairs;
+use pest::error::Error;
 use pest::Parser;
 
 #[derive(Parser)]
-#[grammar = "grammar/scratch.pest"]
-pub struct ScratchParser;
+#[grammar = "grammar/Scratch.pest"]
+struct ScratchParser;
+
+pub fn parse(source: &str) -> Result<Pairs<Rule>, Error<Rule>> {
+  ScratchParser::parse(Rule::program, &source)
+}
 
 #[cfg(test)]
 mod tests {
@@ -92,6 +98,12 @@ mod tests {
 
     assert!(ScratchParser::parse(
       Rule::in_statement,
+      "in(table having id('a')) {
+      }"
+    ).is_ok());
+
+    assert!(ScratchParser::parse(
+      Rule::in_statement,
       "in (table having id('title')) {
         in (span having class('question')) {
           write(x, y);
@@ -124,6 +136,14 @@ mod tests {
       Rule::navigate_block,
       "navigateTo('www.example.com') {
         write(question, answer);
+      }"
+    ).is_ok());
+
+    assert!(ScratchParser::parse(
+      Rule::navigate_block,
+      "navigateTo('http://www.example.com') {
+        in(table having id('a')) {
+        };
       }"
     ).is_ok());
   }
