@@ -2,7 +2,7 @@ program = _{ SOI ~ navigate_block+ ~ EOI }
 
 navigate_block = { "navigateTo" ~ "(" ~ string ~ ")" ~ "{" ~ statements ~ "}" }
 
-statements = _{
+statements = {
   (statement ~ ";")*
 }
 
@@ -13,7 +13,7 @@ statement = _{
   // | assignment_statement
 }
 
-expression = {
+expression = _{
   from_expression
   | ident
   | string
@@ -23,14 +23,13 @@ from_expression = { "from" ~ "(" ~ element ~ "having" ~ selector_tag ~ ")" ~ con
 
 in_statement = { "in" ~ "parent"? ~ "(" ~ element ~ "having" ~ selector_tag ~ ")" ~ "{" ~ statements ~ "}" }
 
-write_statement = { "write" ~ "(" ~ (ident | string) ~ ("," ~ (ident | string))* ~ ")" }
+write_statement = { "write" ~ "(" ~ expression ~ ("," ~ expression)* ~ ")" }
 
 assignment_statement = { ident ~ "=" ~ expression }
 
-selector_tag = {
-  "class" ~ "(" ~ string  ~ ")"
-  | "id" ~ "(" ~ string ~ ")"
-}
+selector_tag = { selector ~ "(" ~ string  ~ ")" }
+
+selector = { "class" | "id" }
 
 content = {
   "getTextContent"

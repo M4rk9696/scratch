@@ -69,6 +69,7 @@ mod tests {
     assert!(ScratchParser::parse(Rule::write_statement, "write(id)").is_ok());
     assert!(ScratchParser::parse(Rule::write_statement, "write(title, c, a, b)").is_ok());
     assert!(ScratchParser::parse(Rule::write_statement, "write('ab', 'sd', a)").is_ok());
+    assert!(ScratchParser::parse(Rule::write_statement, "write(from (h1 having id('a')) getTextContent)").is_ok())
   }
 
   #[test]
