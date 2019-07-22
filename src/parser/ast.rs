@@ -81,9 +81,8 @@ pub enum Statement {
     value: Expression,
   },
   InStatement {
-    is_parent: bool,
-    element: Element,
-    selector: Selector,
+    sub_query: Option<DomSubQuery>,
+    query: DomQuery,
     statements: Statements,
   },
   WriteStatement {
@@ -91,21 +90,31 @@ pub enum Statement {
   },
 }
 
+fn parse_in_statement(pair: pest::iterators::Pair<Rule>) -> Statement {
+  let mut pair = pair.into_inner();
+  match pair.peek().unwrap().as_rule() {
+    Rule::dom_sub_query => {
+      Statement::InStatement {
+        sub_query: Some(parse_dom_sub_query(pair.next().unwrap())),
+        query: parse_dom_query(pair.next().unwrap()),
+        statements: parse_statements(pair.next().unwrap()), 
+      }
+    },
+    _ => {
+      Statement::InStatement {
+        sub_query: None,
+        query: parse_dom_query(pair.next().unwrap()),
+        statements: parse_statements(pair.next().unwrap()), 
+      }
+    }
+  }
+}
+
 fn parse_statement(pair: pest::iterators::Pair<Rule>) -> Statement {
   match pair.as_rule() {
     Rule::in_statement => {
-      let mut pair = pair.into_inner();
-      let element = Element::from(pair.next().unwrap().as_str());
-      let selector = parse_selector(pair.next().unwrap());
-      let stmts = pair.next().unwrap();
-      let statements = parse_statements(stmts);
-      Statement::InStatement {
-        is_parent: false,
-        element: element,
-        selector: selector,
-        statements: statements,
-      }
-    }
+      parse_in_statement(pair)
+    },
     Rule::assignment_statement => {
       let mut pair = pair.into_inner();
       let ident = pair.next().unwrap().as_str().to_string();
@@ -114,7 +123,7 @@ fn parse_statement(pair: pest::iterators::Pair<Rule>) -> Statement {
         ident: ident,
         value: expression,
       }
-    }
+    },
     Rule::write_statement => {
       let mut expressions = vec![];
       for exp in pair.into_inner() {
@@ -129,10 +138,48 @@ fn parse_statement(pair: pest::iterators::Pair<Rule>) -> Statement {
 }
 
 #[derive(Debug, PartialEq, Clone)]
+pub struct DomQuery {
+  pub element: Element,
+  pub selector: Selector,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct DomSubQuery {
+  pub is_parent: bool,
+  pub query: Option<DomQuery>,
+}
+
+fn parse_dom_sub_query(pair: pest::iterators::Pair<Rule>) -> DomSubQuery {
+  match pair.as_str() {
+    "parent" => {
+      DomSubQuery {
+        is_parent: true,
+        query: None,
+      }
+    },
+    _ => {
+      DomSubQuery {
+        is_parent: false,
+        query: Some(parse_dom_query(pair.into_inner().next().unwrap())),
+      }
+    }
+  }
+}
+
+fn parse_dom_query(pair: pest::iterators::Pair<Rule>) -> DomQuery {
+  let mut pair = pair.into_inner();
+  let element = Element::from(pair.next().unwrap().as_str());
+  let selector = parse_selector(pair.next().unwrap());
+  DomQuery {
+    element: element,
+    selector: selector,
+  }
+}
+
+#[derive(Debug, PartialEq, Clone)]
 pub enum Expression {
   FromExpression {
-    element: Element,
-    selector: Selector,
+    query: DomQuery,
     content: Content,
   },
   Ident(String),
@@ -143,13 +190,9 @@ fn parse_expression(pair: pest::iterators::Pair<Rule>) -> Expression {
   match pair.as_rule() {
     Rule::from_expression => {
       let mut pair = pair.into_inner();
-      let element = Element::from(pair.next().unwrap().as_str());
-      let selector = parse_selector(pair.next().unwrap());
-      let content = Content::from(pair.next().unwrap().as_str());
       Expression::FromExpression {
-        element: element,
-        selector: selector,
-        content: content,
+        query: parse_dom_query(pair.next().unwrap()),
+        content: Content::from(pair.next().unwrap().as_str()),
       }
     },
     Rule::ident => Expression::Ident(pair.as_str().to_string()),
@@ -236,7 +279,7 @@ mod tests {
   use super::*;
 
   #[test]
-  fn create_selector_node() {
+  fn costruct_navigate_block() {
 
   }
 }

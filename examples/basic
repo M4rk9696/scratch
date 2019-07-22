@@ -1,5 +1,10 @@
 navigateTo('http://www.example.com') {
-  in(table having id('a')) {
+  in parent of (table having id('a')) {
+    question = from(tr having class('question')) getTextContent;
+    answer = from(tr having class('answer')) getTextContent;
+    write(question, answer);
+  };
+  in child(h1 having id('b')) of (table having id('a')) {
     question = from(tr having class('question')) getTextContent;
     answer = from(tr having class('answer')) getTextContent;
     write(question, answer);

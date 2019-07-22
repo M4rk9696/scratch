@@ -10,7 +10,6 @@ statement = _{
   assignment_statement
   | in_statement
   | write_statement
-  // | assignment_statement
 }
 
 expression = _{
@@ -19,13 +18,20 @@ expression = _{
   | string
 }
 
-from_expression = { "from" ~ "(" ~ element ~ "having" ~ selector_tag ~ ")" ~ content }
+from_expression = { "from" ~ "(" ~ dom_query ~ ")" ~ content }
 
-in_statement = { "in" ~ "parent"? ~ "(" ~ element ~ "having" ~ selector_tag ~ ")" ~ "{" ~ statements ~ "}" }
+in_statement = { "in" ~ (dom_sub_query ~ "of")? ~ "(" ~ dom_query ~ ")" ~ "{" ~ statements ~ "}" }
 
 write_statement = { "write" ~ "(" ~ expression ~ ("," ~ expression)* ~ ")" }
 
 assignment_statement = { ident ~ "=" ~ expression }
+
+dom_sub_query = {
+  "parent"
+  | "child" ~ "(" ~ dom_query ~ ")"
+}
+
+dom_query = { element ~ "having" ~ selector_tag }
 
 selector_tag = { selector ~ "(" ~ string  ~ ")" }
 
@@ -37,7 +43,7 @@ content = {
 
 element = {
   // Reminder that order might foreshadow some elements eg) th before thead will never match thead
-  "form" | "input" | "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
+  "_" | "form" | "input" | "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
   | "div" | "table" | "thead" | "tbody" | "tr" | "th"
 }
 

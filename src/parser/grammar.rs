@@ -112,6 +112,27 @@ mod tests {
         write(x);
       }"
     ).is_ok());
+
+    assert!(ScratchParser::parse(
+      Rule::in_statement,
+      "in parent of (h1 having id('title')) {
+        write(x, y);
+      }"
+    ).is_ok());
+
+    assert!(ScratchParser::parse(
+      Rule::in_statement,
+      "in child(div having id('parent')) of (tr having class('car')) {
+        write(x);
+      }"
+    ).is_ok());
+
+    assert!(ScratchParser::parse(
+      Rule::in_statement,
+      "in(_ having id('title')) {
+        write(x, y);
+      }"
+    ).is_ok());
   }
 
   #[test]
