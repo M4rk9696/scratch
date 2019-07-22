@@ -1,9 +1,9 @@
 use std::str::FromStr;
 use super::*;
 
-use pest::error::Error;
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Program {
   pub navs: Vec<NavigateBlock>,
 }
@@ -17,7 +17,7 @@ impl Program {
 }
 
 impl FromStr for Program {
-  type Err = Error<Rule>;
+  type Err = ParseError;
 
   fn from_str(input: &str) -> Result<Self, Self::Err> {
 
@@ -40,19 +40,20 @@ impl FromStr for Program {
           _ => panic!("unknown rule {:}", pair),
         }
       }
+      Ok(Program{
+        navs: nav_blocks
+      })
     }
     else {
       let err = pairs.err().unwrap();
-      println!("Error at {:?}", err.line_col);
+      Err(ParseError {
+        reason: format!("Error at {:?}", err.line_col),
+      })
     }
-
-    Ok(Program{
-      navs: nav_blocks
-    })
   }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct NavigateBlock {
   pub url: String,
   pub statements: Statements,
@@ -74,7 +75,7 @@ fn parse_statements(pair: pest::iterators::Pair<Rule>) -> Statements {
   }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub enum Statement {
   AssignmentStatement {
     ident: String,
@@ -137,13 +138,13 @@ fn parse_statement(pair: pest::iterators::Pair<Rule>) -> Statement {
   }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct DomQuery {
   pub element: Element,
   pub selector: Selector,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct DomSubQuery {
   pub is_parent: bool,
   pub query: Option<DomQuery>,
@@ -176,7 +177,7 @@ fn parse_dom_query(pair: pest::iterators::Pair<Rule>) -> DomQuery {
   }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub enum Expression {
   FromExpression {
     query: DomQuery,
@@ -201,7 +202,7 @@ fn parse_expression(pair: pest::iterators::Pair<Rule>) -> Expression {
   }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub enum Element {
   Form, Input, Span, H1, H2, H3, H4,
   H5, Div, Table, Thead, Tbody, Tr, Th,
@@ -229,7 +230,7 @@ impl Element {
   }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub enum Selector {
   ClassSelector  {
     ident: String
@@ -260,7 +261,7 @@ fn parse_selector(pair: pest::iterators::Pair<Rule>) -> Selector {
   Selector::from(selector, ident)
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub enum Content {
   GetTextContent,
 }
@@ -280,6 +281,8 @@ mod tests {
 
   #[test]
   fn costruct_navigate_block() {
-
+    // let content = "navigateTo('example.com'){
+    // }"
+    // Program::from_str(content)
   }
 }
