@@ -1,8 +1,6 @@
 use std::str::FromStr;
 use super::*;
 
-use pest::error::Error;
-
 #[derive(Debug, PartialEq, Clone)]
 pub struct Program {
   pub navs: Vec<NavigateBlock>,
@@ -17,7 +15,7 @@ impl Program {
 }
 
 impl FromStr for Program {
-  type Err = Error<Rule>;
+  type Err = ParseError;
 
   fn from_str(input: &str) -> Result<Self, Self::Err> {
 
@@ -40,15 +38,16 @@ impl FromStr for Program {
           _ => panic!("unknown rule {:}", pair),
         }
       }
+      Ok(Program{
+        navs: nav_blocks
+      })
     }
     else {
       let err = pairs.err().unwrap();
-      println!("Error at {:?}", err.line_col);
+      Err(ParseError {
+        reason: format!("Error at {:?}", err.line_col),
+      })
     }
-
-    Ok(Program{
-      navs: nav_blocks
-    })
   }
 }
 
