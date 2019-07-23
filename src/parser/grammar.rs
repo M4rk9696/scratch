@@ -50,6 +50,12 @@ mod tests {
 
         assert!(ScratchParser::parse(
             Rule::expression,
+            "from (h1) getTextContent"
+        )
+        .is_ok());
+
+        assert!(ScratchParser::parse(
+            Rule::expression,
             "from
       (h1 
       having 
@@ -131,6 +137,11 @@ mod tests {
             "in child(div having id('parent')) of (tr having class('car')) {
         write(x);
       }"
+        assert!(ScratchParser::parse(
+            Rule::in_statement,
+            "in child(div) of (tr) {
+                write(x);
+            }"
         )
         .is_ok());
 

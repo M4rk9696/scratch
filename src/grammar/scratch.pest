@@ -31,7 +31,7 @@ dom_sub_query = {
   | "child" ~ "(" ~ dom_query ~ ")"
 }
 
-dom_query = { element ~ "having" ~ selector_tag }
+dom_query = { element ~ ("having" ~ selector_tag)? }
 
 selector_tag = { selector ~ "(" ~ string  ~ ")" }
 

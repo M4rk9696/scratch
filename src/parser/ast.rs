@@ -127,7 +127,7 @@ fn parse_statement(pair: pest::iterators::Pair<Rule>) -> Statement {
 #[derive(Debug, PartialEq, Clone)]
 pub struct DomQuery {
     pub element: Element,
-    pub selector: Selector,
+    pub selector: Option<Selector>,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -152,10 +152,18 @@ fn parse_dom_sub_query(pair: pest::iterators::Pair<Rule>) -> DomSubQuery {
 fn parse_dom_query(pair: pest::iterators::Pair<Rule>) -> DomQuery {
     let mut pair = pair.into_inner();
     let element = Element::from(pair.next().unwrap().as_str());
-    let selector = parse_selector(pair.next().unwrap());
-    DomQuery {
-        element: element,
-        selector: selector,
+    match pair.next() {
+        Some(pair) => {
+            let selector = parse_selector(pair);
+            DomQuery {
+                element: element,
+                selector: Some(selector),
+            }
+        }
+        None => DomQuery {
+            element: element,
+            selector: None,
+        }
     }
 }
 
