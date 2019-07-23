@@ -57,11 +57,11 @@ mod tests {
         assert!(ScratchParser::parse(
             Rule::expression,
             "from
-      (h1 
-      having 
-      class('title') 
-      )
-      getTextContent"
+            (h1
+            having
+            class('title')
+            )
+            getTextContent"
         )
         .is_ok());
     }
@@ -92,51 +92,54 @@ mod tests {
         assert!(ScratchParser::parse(
             Rule::in_statement,
             "in (div having id('title')) {
-        write(x);
-      }"
+                write(x);
+            }"
         )
         .is_ok());
 
         assert!(ScratchParser::parse(
             Rule::in_statement,
             "in (div having class('title')) {
-        x = from(h1 having id('abc')) getTextContent;
-        write(x);
-      }"
+                x = from(h1 having id('abc')) getTextContent;
+                write(x);
+            }"
         )
         .is_ok());
 
         assert!(ScratchParser::parse(
             Rule::in_statement,
             "in(table having id('a')) {
-      }"
+            }"
         )
         .is_ok());
 
         assert!(ScratchParser::parse(
             Rule::in_statement,
             "in (table having id('title')) {
-        in (span having class('question')) {
-          write(x, y);
-        };
-        write(x);
-      }"
+                in (span having class('question')) {
+                    write(x, y);
+                };
+                write(x);
+            }"
         )
         .is_ok());
 
         assert!(ScratchParser::parse(
             Rule::in_statement,
             "in parent of (h1 having id('title')) {
-        write(x, y);
-      }"
+                write(x, y);
+            }"
         )
         .is_ok());
 
         assert!(ScratchParser::parse(
             Rule::in_statement,
             "in child(div having id('parent')) of (tr having class('car')) {
-        write(x);
-      }"
+                write(x);
+            }"
+        )
+        .is_ok());
+
         assert!(ScratchParser::parse(
             Rule::in_statement,
             "in child(div) of (tr) {
@@ -148,27 +151,22 @@ mod tests {
         assert!(ScratchParser::parse(
             Rule::in_statement,
             "in(_ having id('title')) {
-        write(x, y);
-      }"
+                write(x, y);
+            }"
         )
         .is_ok());
     }
 
     #[test]
     fn parse_statements() {
-        assert!(ScratchParser::parse(
-            Rule::statements,
-            "write(x, y);
-      "
-        )
-        .is_ok());
+        assert!(ScratchParser::parse(Rule::statements, "write(x, y);").is_ok());
 
         assert!(ScratchParser::parse(
             Rule::statements,
             "question = from(tr having class('question')) getTextContent;
-      answer = from(tr having class('question')) getTextContent;
-      write(question, answer);
-      "
+            answer = from(tr having class('question')) getTextContent;
+            write(question, answer);
+            "
         )
         .is_ok());
     }
@@ -179,17 +177,17 @@ mod tests {
         assert!(ScratchParser::parse(
             Rule::navigate_block,
             "navigateTo('www.example.com') {
-        write(question, answer);
-      }"
+                write(question, answer);
+            }"
         )
         .is_ok());
 
         assert!(ScratchParser::parse(
             Rule::navigate_block,
             "navigateTo('http://www.example.com') {
-        in(table having id('a')) {
-        };
-      }"
+                in(table having id('a')) {
+                };
+            }"
         )
         .is_ok());
     }
