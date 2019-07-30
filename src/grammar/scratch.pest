@@ -44,7 +44,7 @@ content = {
 element = {
   // Reminder that order might foreshadow some elements eg) th before thead will never match thead
   "_" | "form" | "input" | "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
-  | "div" | "table" | "thead" | "tbody" | "tr" | "th"
+  | "div" | "table" | "thead" | "tbody" | "tr" | "th" | "a"
 }
 
 ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_" )* }

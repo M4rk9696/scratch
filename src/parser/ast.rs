@@ -205,6 +205,8 @@ pub enum Element {
     Tbody,
     Tr,
     Th,
+    A,
+    Empty,
 }
 
 impl Element {
@@ -224,6 +226,8 @@ impl Element {
             "tbody" => Element::Tbody,
             "tr" => Element::Tr,
             "th" => Element::Th,
+            "a" => Element::A,
+            "_" => Element::Empty,
             _ => panic!("Unrecognised element"),
         }
     }
@@ -292,6 +296,16 @@ mod tests {
             "
     navigateTo('example.com') {
       in (table having class('abc')) {
+      };
+    }
+    "
+        )
+        .is_ok());
+    
+        assert!(Program::from_str(
+            "
+    navigateTo('example.com') {
+      in (_ having class('abc')) {
       };
     }
     "
