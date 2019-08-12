@@ -191,42 +191,17 @@ fn parse_expression(pair: pest::iterators::Pair<Rule>) -> Expression {
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Element {
-    Form,
-    Input,
-    Span,
-    H1,
-    H2,
-    H3,
-    H4,
-    H5,
-    Div,
-    Table,
-    Thead,
-    Tbody,
-    Tr,
-    Th,
-    A,
+    DOMElement(String),
     Empty,
 }
 
 impl Element {
     fn from(elem: &str) -> Self {
         match elem {
-            "form" => Element::Form,
-            "input" => Element::Input,
-            "span" => Element::Span,
-            "h1" => Element::H1,
-            "h2" => Element::H2,
-            "h3" => Element::H3,
-            "h4" => Element::H4,
-            "h5" => Element::H5,
-            "div" => Element::Div,
-            "table" => Element::Table,
-            "thead" => Element::Thead,
-            "tbody" => Element::Tbody,
-            "tr" => Element::Tr,
-            "th" => Element::Th,
-            "a" => Element::A,
+            "form" | "input" | "span" | "h1"
+            | "h2" | "h3" | "h4" | "h5" | "div"
+            | "table" | "thead" | "tbody" | "tr"
+            | "th"| "a" => Element::DOMElement(elem.to_string()),
             "_" => Element::Empty,
             _ => panic!("Unrecognised element"),
         }
