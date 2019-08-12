@@ -4,6 +4,12 @@ version = "0.1.0"
 authors = ["m.nimalan <m.nimalan@thoughtworks.com>"]
 edition = "2018"
 
+# [lib]
+# proc-macro = true
+
 [dependencies]
 pest = "2.1.1"
 pest_derive = "2.1.0"
+select = "0.4.3"
+# quote = "0.6"
+# syn = "0.15.44"

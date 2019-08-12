@@ -1,0 +1,25 @@
+navigateTo('stackoverflow.html') {
+  in child(a) of (_ having id('hmenus')) {
+    hmenus = from _ getTextContent;
+    url = from _ attr('href');
+    write(hmenus, url);
+  };
+
+  in _ having class('question-summary') {
+    question = from _ having class('question-hyperlink') getTextContent;
+    votes = from(_ having class('vote-count-post')) getTextContent;
+    answers = from child(strong) of _ having class('status') getTextContent;
+
+    asked_on = from (_ having class('relativetime')) getTextContent;
+    asker = from child(a) of (_ having class('user-details')) getTextContent;
+
+    write(question, votes, answers, asked_on, asker);
+  };
+
+  in parent of (_ having id('h-related-tags')) {
+    tag = from (a) getTextContent;
+    count = from (_ having class('item-multiplier-count')) getTextContent;
+    write(tag, count);
+  };
+
+}
