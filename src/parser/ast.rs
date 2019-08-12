@@ -163,29 +163,43 @@ fn parse_dom_query(pair: pest::iterators::Pair<Rule>) -> DomQuery {
         None => DomQuery {
             element: element,
             selector: None,
-        }
+        },
     }
 }
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Expression {
-    FromExpression { query: DomQuery, content: Content },
+    FromExpression {
+        sub_query: Option<DomSubQuery>,
+        query: DomQuery,
+        content: Content,
+    },
     Ident(String),
     Str(String),
 }
 
 fn parse_expression(pair: pest::iterators::Pair<Rule>) -> Expression {
     match pair.as_rule() {
-        Rule::from_expression => {
-            let mut pair = pair.into_inner();
-            Expression::FromExpression {
-                query: parse_dom_query(pair.next().unwrap()),
-                content: Content::from(pair.next().unwrap().as_str()),
-            }
-        }
+        Rule::from_expression => parse_from_expression(pair),
         Rule::ident => Expression::Ident(pair.as_str().to_string()),
         Rule::string => Expression::Str(pair.as_str().to_string()),
         _ => panic!("Unknown expression {:?}", pair),
+    }
+}
+
+fn parse_from_expression(pair: pest::iterators::Pair<Rule>) -> Expression {
+    let mut pair = pair.into_inner();
+    match pair.peek().unwrap().as_rule() {
+        Rule::dom_sub_query => Expression::FromExpression {
+            sub_query: Some(parse_dom_sub_query(pair.next().unwrap())),
+            query: parse_dom_query(pair.next().unwrap()),
+            content: Content::extract(pair.next().unwrap()),
+        },
+        _ => Expression::FromExpression {
+            sub_query: None,
+            query: parse_dom_query(pair.next().unwrap()),
+            content: Content::extract(pair.next().unwrap()),
+        },
     }
 }
 
@@ -198,10 +212,10 @@ pub enum Element {
 impl Element {
     fn from(elem: &str) -> Self {
         match elem {
-            "form" | "input" | "span" | "h1"
-            | "h2" | "h3" | "h4" | "h5" | "div"
-            | "table" | "thead" | "tbody" | "tr"
-            | "th"| "a" => Element::DOMElement(elem.to_string()),
+            "form" | "input" | "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "div" | "table"
+            | "thead" | "tbody" | "tr" | "th" | "a" | "strong" => {
+                Element::DOMElement(elem.to_string())
+            }
             "_" => Element::Empty,
             _ => panic!("Unrecognised element"),
         }
@@ -238,13 +252,14 @@ fn parse_selector(pair: pest::iterators::Pair<Rule>) -> Selector {
 #[derive(Debug, PartialEq, Clone)]
 pub enum Content {
     GetTextContent,
+    Attr(String),
 }
 
 impl Content {
-    fn from(id: &str) -> Self {
-        match id {
+    fn extract(pair: pest::iterators::Pair<Rule>) -> Self {
+        match pair.as_str() {
             "getTextContent" => Content::GetTextContent,
-            _ => panic!("Unknown content type {}", id),
+            _ => Content::Attr(pair.into_inner().next().unwrap().as_str().to_string()),
         }
     }
 }
@@ -276,7 +291,7 @@ mod tests {
     "
         )
         .is_ok());
-    
+
         assert!(Program::from_str(
             "
     navigateTo('example.com') {

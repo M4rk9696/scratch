@@ -48,11 +48,7 @@ mod tests {
         )
         .is_ok());
 
-        assert!(ScratchParser::parse(
-            Rule::expression,
-            "from (h1) getTextContent"
-        )
-        .is_ok());
+        assert!(ScratchParser::parse(Rule::expression, "from (h1) getTextContent").is_ok());
 
         assert!(ScratchParser::parse(
             Rule::expression,
